@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'dart:convert'; // Pro práci s JSON
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(const MyApp());
@@ -26,22 +28,50 @@ class NoteIdeaHomePage extends StatefulWidget {
 class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
   List<Note> notes = [];
 
+  @override
+  void initState() {
+    super.initState();
+    _loadNotes(); // Načtení poznámek při spuštění aplikace
+  }
+
+  Future<void> _loadNotes() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedNotes = prefs.getString('notes');
+    if (savedNotes != null) {
+      final List<dynamic> decodedNotes = jsonDecode(savedNotes);
+      setState(() {
+        notes = decodedNotes
+            .map((note) => Note.fromJson(note as Map<String, dynamic>))
+            .toList();
+      });
+    }
+  }
+
+  Future<void> _saveNotes() async {
+    final prefs = await SharedPreferences.getInstance();
+    final encodedNotes = jsonEncode(notes.map((note) => note.toJson()).toList());
+    await prefs.setString('notes', encodedNotes);
+  }
+
   void addNewNote(Note note) {
     setState(() {
       notes.add(note);
     });
+    _saveNotes();
   }
 
   void updateNote(int index, Note updatedNote) {
     setState(() {
       notes[index] = updatedNote;
     });
+    _saveNotes();
   }
 
   void deleteNote(int index) {
     setState(() {
       notes.removeAt(index);
     });
+    _saveNotes();
   }
 
   @override
@@ -179,6 +209,20 @@ class Note {
     required this.title,
     required this.content,
   });
+
+  factory Note.fromJson(Map<String, dynamic> json) {
+    return Note(
+      title: json['title'],
+      content: json['content'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'title': title,
+      'content': content,
+    };
+  }
 }
 
 class NewNotePage extends StatefulWidget {
@@ -197,10 +241,10 @@ class _NewNotePageState extends State<NewNotePage> {
   @override
   void initState() {
     super.initState();
-    _titleController = TextEditingController(
-        text: widget.existingNote?.title ?? '');
-    _contentController = TextEditingController(
-        text: widget.existingNote?.content ?? '');
+    _titleController =
+        TextEditingController(text: widget.existingNote?.title ?? '');
+    _contentController =
+        TextEditingController(text: widget.existingNote?.content ?? '');
   }
 
   @override
