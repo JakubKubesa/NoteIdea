@@ -83,14 +83,17 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
 
   void reorderNotes(int oldIndex, int newIndex) {
     setState(() {
-      if (newIndex > oldIndex) newIndex -= 1;
-      final movedNote = notes.removeAt(oldIndex);
-      notes.insert(newIndex, movedNote);
+      if (newIndex > oldIndex) {
+        newIndex -= 1;
+      }
+      final item = notes.removeAt(oldIndex);
+      notes.insert(newIndex, item);
       filteredNotes = List.from(notes); // Synchronizace filtrovaných poznámek
     });
     _saveNotes();
   }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -169,7 +172,7 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
               },
             ),
           ),
-          // Seznam poznámek (ReorderableListView)
+          // Seznam poznámek
           Expanded(
             child: Container(
               color: Colors.white,
@@ -213,6 +216,8 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
                             fontSize: 14,
                             color: Colors.black54,
                           ),
+                          maxLines: 2, // Omezení na maximálně 3 řádky
+                          overflow: TextOverflow.ellipsis, // Zobrazení "..." pokud je text delší
                         ),
                         onTap: () async {
                           final updatedNote = await Navigator.push<Note>(
