@@ -14,11 +14,13 @@ class NoteIdeaHomePage extends StatefulWidget {
 
 class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
   List<Note> notes = [];
+  List<Note> filteredNotes = [];
 
   @override
   void initState() {
     super.initState();
     _loadNotes();
+    filteredNotes = notes; // Default to showing all notes
   }
 
   Future<void> _loadNotes() async {
@@ -30,6 +32,7 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
         notes = decodedNotes
             .map((note) => Note.fromJson(note as Map<String, dynamic>))
             .toList();
+        filteredNotes = List.from(notes); // Synchronizace filtrovaných poznámek
       });
     }
   }
@@ -43,6 +46,7 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
   void addNewNote(Note note) {
     setState(() {
       notes.add(note);
+      filteredNotes = List.from(notes); // Aktualizace filtrovaného seznamu
     });
     _saveNotes();
   }
@@ -50,6 +54,7 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
   void updateNote(int index, Note updatedNote) {
     setState(() {
       notes[index] = updatedNote;
+      filteredNotes = List.from(notes); // Aktualizace filtrovaného seznamu
     });
     _saveNotes();
   }
@@ -57,11 +62,25 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
   void deleteNote(int index) {
     setState(() {
       notes.removeAt(index);
+      filteredNotes = List.from(notes); // Aktualizace filtrovaného seznamu
     });
     _saveNotes();
   }
 
-  @override
+  void updateFilteredNotes(String query) {
+    setState(() {
+      if (query.isEmpty) {
+        filteredNotes = List.from(notes); // Zobraz všechny poznámky
+      } else {
+        filteredNotes = notes
+            .where((note) =>
+                note.title.toLowerCase().contains(query.toLowerCase()) ||
+                note.content.toLowerCase().contains(query.toLowerCase()))
+            .toList();
+      }
+    });
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -99,6 +118,7 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
       ),
       body: Column(
         children: [
+          // Nadpis a dekorace (zabírá 22 % výšky obrazovky)
           Container(
             height: MediaQuery.of(context).size.height * 0.15,
             decoration: BoxDecoration(
@@ -109,25 +129,46 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
               ),
             ),
             child: const Center(
-              child: Text(
-                'Note Idea',
-                style: TextStyle(
-                  fontSize: 36,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+              child: Padding(
+                padding: EdgeInsets.only(top: 16.0),
+                child: Text(
+                  'Note Idea',
+                  style: TextStyle(
+                    fontSize: 36,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ),
           ),
+          // Vyhledávací pole
+          Container(
+            color: Colors.white,
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: 'Search notes...',
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              onChanged: (query) {
+                updateFilteredNotes(query); // Aktualizuje filtrované poznámky
+              },
+            ),
+          ),
+          // Seznam poznámek
           Expanded(
             child: Container(
               color: Colors.white,
               child: ListView.builder(
-                itemCount: notes.length,
+                itemCount: filteredNotes.length,
                 itemBuilder: (context, index) {
-                  String shortContent = notes[index].content.length > 30
-                      ? notes[index].content.substring(0, 30) + '...'
-                      : notes[index].content;
+                  String shortContent = filteredNotes[index].content.length > 30
+                      ? filteredNotes[index].content.substring(0, 30) + '...'
+                      : filteredNotes[index].content;
 
                   return Container(
                     margin: const EdgeInsets.symmetric(
@@ -136,7 +177,7 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
                       color: Colors.blue.shade50,
                       borderRadius: BorderRadius.circular(12),
                       boxShadow: [
-                        BoxShadow(
+                        const BoxShadow(
                           color: Colors.black26,
                           offset: Offset(0, 2),
                           blurRadius: 4,
@@ -146,7 +187,7 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
                     child: ListTile(
                       contentPadding: const EdgeInsets.all(16),
                       title: Text(
-                        notes[index].title,
+                        filteredNotes[index].title,
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -164,7 +205,7 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
                           context,
                           MaterialPageRoute(
                             builder: (context) => NoteDetailPage(
-                              note: notes[index],
+                              note: filteredNotes[index],
                               onDelete: () => deleteNote(index),
                               onUpdate: (updatedNote) =>
                                   updateNote(index, updatedNote),
