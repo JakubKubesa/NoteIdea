@@ -81,6 +81,16 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
     });
   }
 
+  void reorderNotes(int oldIndex, int newIndex) {
+    setState(() {
+      if (newIndex > oldIndex) newIndex -= 1;
+      final movedNote = notes.removeAt(oldIndex);
+      notes.insert(newIndex, movedNote);
+      filteredNotes = List.from(notes); // Synchronizace filtrovaných poznámek
+    });
+    _saveNotes();
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -159,67 +169,72 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
               },
             ),
           ),
-          // Seznam poznámek
+          // Seznam poznámek (ReorderableListView)
           Expanded(
             child: Container(
               color: Colors.white,
-              child: ListView.builder(
-                itemCount: filteredNotes.length,
-                itemBuilder: (context, index) {
-                  String shortContent = filteredNotes[index].content.length > 30
-                      ? filteredNotes[index].content.substring(0, 30) + '...'
-                      : filteredNotes[index].content;
+              child: ReorderableListView(
+                onReorder: reorderNotes, // Callback pro změnu pořadí
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                children: List.generate(
+                  filteredNotes.length,
+                  (index) {
+                    String shortContent = filteredNotes[index].content.length > 30
+                        ? filteredNotes[index].content.substring(0, 30) + '...'
+                        : filteredNotes[index].content;
 
-                  return Container(
-                    margin: const EdgeInsets.symmetric(
-                        vertical: 8, horizontal: 16),
-                    decoration: BoxDecoration(
-                      color: Colors.blue.shade50,
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        const BoxShadow(
-                          color: Colors.black26,
-                          offset: Offset(0, 2),
-                          blurRadius: 4,
-                        ),
-                      ],
-                    ),
-                    child: ListTile(
-                      contentPadding: const EdgeInsets.all(16),
-                      title: Text(
-                        filteredNotes[index].title,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      subtitle: Text(
-                        shortContent,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Colors.black54,
-                        ),
-                      ),
-                      onTap: () async {
-                        final updatedNote = await Navigator.push<Note>(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => NoteDetailPage(
-                              note: filteredNotes[index],
-                              onDelete: () => deleteNote(index),
-                              onUpdate: (updatedNote) =>
-                                  updateNote(index, updatedNote),
-                            ),
+                    return Container(
+                      key: ValueKey(filteredNotes[index].title),
+                      margin: const EdgeInsets.symmetric(
+                          vertical: 8, horizontal: 16),
+                      decoration: BoxDecoration(
+                        color: Colors.blue.shade50,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          const BoxShadow(
+                            color: Colors.black26,
+                            offset: Offset(0, 2),
+                            blurRadius: 4,
                           ),
-                        );
+                        ],
+                      ),
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.all(16),
+                        title: Text(
+                          filteredNotes[index].title,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        subtitle: Text(
+                          shortContent,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.black54,
+                          ),
+                        ),
+                        onTap: () async {
+                          final updatedNote = await Navigator.push<Note>(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => NoteDetailPage(
+                                note: filteredNotes[index],
+                                onDelete: () => deleteNote(index),
+                                onUpdate: (updatedNote) =>
+                                    updateNote(index, updatedNote),
+                              ),
+                            ),
+                          );
 
-                        if (updatedNote != null) {
-                          updateNote(index, updatedNote);
-                        }
-                      },
-                    ),
-                  );
-                },
+                          if (updatedNote != null) {
+                            updateNote(index, updatedNote);
+                          }
+                        },
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
           ),
