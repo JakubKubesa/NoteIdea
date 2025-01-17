@@ -13,6 +13,7 @@ class NewNotePage extends StatefulWidget {
 class _NewNotePageState extends State<NewNotePage> {
   late TextEditingController _titleController;
   late TextEditingController _contentController;
+  late TextEditingController _passwordController;
 
   @override
   void initState() {
@@ -21,6 +22,8 @@ class _NewNotePageState extends State<NewNotePage> {
         TextEditingController(text: widget.existingNote?.title ?? '');
     _contentController =
         TextEditingController(text: widget.existingNote?.content ?? '');
+    _passwordController =
+        TextEditingController(text: widget.existingNote?.password ?? '');
   }
 
   @override
@@ -36,6 +39,9 @@ class _NewNotePageState extends State<NewNotePage> {
               final updatedNote = Note(
                 title: _titleController.text,
                 content: _contentController.text,
+                password: _passwordController.text.isNotEmpty
+                    ? _passwordController.text
+                    : null,
               );
               Navigator.pop(context, updatedNote);
             },
@@ -52,6 +58,14 @@ class _NewNotePageState extends State<NewNotePage> {
                 decoration: const InputDecoration(
                   labelText: 'Title',
                 ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: _passwordController,
+                decoration: const InputDecoration(
+                  labelText: 'Password (optional)',
+                ),
+                obscureText: true,
               ),
               const SizedBox(height: 16),
               ConstrainedBox(

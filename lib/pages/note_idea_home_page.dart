@@ -81,6 +81,51 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
     });
   }
 
+  Future<void> _showPasswordDialog(Note note, int index) async {
+    final controller = TextEditingController();
+    bool isAuthenticated = false;
+
+    await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Enter Password'),
+        content: TextField(
+          controller: controller,
+          obscureText: true,
+          decoration: const InputDecoration(hintText: 'Password'),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              if (note.password == controller.text) {
+                isAuthenticated = true;
+                Navigator.pop(context);
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Incorrect password')),
+                );
+              }
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+
+    if (isAuthenticated) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => NoteDetailPage(
+            note: note,
+            onDelete: () => deleteNote(index),
+            onUpdate: (updatedNote) => updateNote(index, updatedNote),
+          ),
+        ),
+      );
+    }
+  }
+
   void reorderNotes(int oldIndex, int newIndex) {
     setState(() {
       if (newIndex > oldIndex) {
@@ -96,54 +141,17 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.green.shade700,
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 20.0, top: 7),
-            child: GestureDetector(
-              onTap: () async {
-                final newNote = await Navigator.push<Note>(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const NewNotePage(),
-                  ),
-                );
-                if (newNote != null) {
-                  addNewNote(newNote);
-                }
-              },
-              child: Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade300,
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.add,
-                  size: 30,
-                  color: Colors.black,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
       body: Column(
         children: [
-          // Nadpis a dekorace (zabírá 22 % výšky obrazovky)
+          // Nadpis a dekorace
           Container(
-            height: MediaQuery.of(context).size.height * 0.15,
+            height: MediaQuery.of(context).size.height * 0.20,
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Colors.green.shade700, Colors.blue.shade500],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-              ),
+              color: const Color.fromARGB(155, 113, 65, 33)
             ),
             child: const Center(
               child: Padding(
-                padding: EdgeInsets.only(top: 16.0),
+                padding: EdgeInsets.only(top: 50.0),
                 child: Text(
                   'Note Idea',
                   style: TextStyle(
@@ -157,7 +165,7 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
           ),
           // Vyhledávací pole
           Container(
-            color: Colors.white,
+            color: const Color.fromARGB(255, 236, 233, 233),
             padding: const EdgeInsets.all(8.0),
             child: TextField(
               decoration: InputDecoration(
@@ -168,16 +176,16 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
                 ),
               ),
               onChanged: (query) {
-                updateFilteredNotes(query); // Aktualizuje filtrované poznámky
+                updateFilteredNotes(query);
               },
             ),
           ),
           // Seznam poznámek
           Expanded(
             child: Container(
-              color: Colors.white,
+              color: const Color.fromARGB(255, 236, 233, 233),
               child: ReorderableListView(
-                onReorder: reorderNotes, // Callback pro změnu pořadí
+                onReorder: reorderNotes,
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
                 children: List.generate(
                   filteredNotes.length,
@@ -185,16 +193,16 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
                     String shortContent = filteredNotes[index].content.length > 30
                         ? filteredNotes[index].content.substring(0, 30) + '...'
                         : filteredNotes[index].content;
-
+  
                     return Container(
                       key: ValueKey(filteredNotes[index].title),
-                      margin: const EdgeInsets.symmetric(
-                          vertical: 8, horizontal: 16),
+                      margin:
+                          const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                       decoration: BoxDecoration(
                         color: Colors.blue.shade50,
                         borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          const BoxShadow(
+                        boxShadow: const [
+                          BoxShadow(
                             color: Colors.black26,
                             offset: Offset(0, 2),
                             blurRadius: 4,
@@ -216,24 +224,24 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
                             fontSize: 14,
                             color: Colors.black54,
                           ),
-                          maxLines: 2, // Omezení na maximálně 3 řádky
-                          overflow: TextOverflow.ellipsis, // Zobrazení "..." pokud je text delší
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        onTap: () async {
-                          final updatedNote = await Navigator.push<Note>(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => NoteDetailPage(
-                                note: filteredNotes[index],
-                                onDelete: () => deleteNote(index),
-                                onUpdate: (updatedNote) =>
-                                    updateNote(index, updatedNote),
+                        onTap: () {
+                          if (filteredNotes[index].password != null) {
+                            _showPasswordDialog(filteredNotes[index], index);
+                          } else {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => NoteDetailPage(
+                                  note: filteredNotes[index],
+                                  onDelete: () => deleteNote(index),
+                                  onUpdate: (updatedNote) =>
+                                      updateNote(index, updatedNote),
+                                ),
                               ),
-                            ),
-                          );
-
-                          if (updatedNote != null) {
-                            updateNote(index, updatedNote);
+                            );
                           }
                         },
                       ),
@@ -245,6 +253,32 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
           ),
         ],
       ),
+      floatingActionButton: Container(
+        margin: const EdgeInsets.only(bottom: 16.0),
+        child: FloatingActionButton(
+          onPressed: () async {
+            final newNote = await Navigator.push<Note>(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const NewNotePage(),
+              ),
+            );
+            if (newNote != null) {
+              addNewNote(newNote);
+            }
+          },
+          backgroundColor: const Color.fromARGB(255, 157, 172, 158),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: const Icon(
+            Icons.add,
+            size: 30,
+            color: Colors.white,
+          ),
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }
