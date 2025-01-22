@@ -6,7 +6,8 @@ plugins {
 
 android {
     namespace = "com.example.noteidea"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 34// Nastav explicitně na aktuální doporučenou verzi
+
     ndkVersion = flutter.ndkVersion
 
     compileOptions {

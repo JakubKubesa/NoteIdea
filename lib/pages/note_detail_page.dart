@@ -18,7 +18,7 @@ class NoteDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.green.shade700,
+        backgroundColor: const Color.fromARGB(155, 113, 65, 33),
         title: Text(note.title),
         actions: [
           IconButton(
