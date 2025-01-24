@@ -3,27 +3,24 @@ import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:permission_handler/permission_handler.dart';
 
+//notification settings
+
 class NotificationService {
   static final FlutterLocalNotificationsPlugin _notificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
   static Future<void> init() async {
-    // Inicializace časových zón
     tz.initializeTimeZones();
 
-    // Nastavení pro Android
     const AndroidInitializationSettings androidSettings =
         AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    // Inicializační nastavení
     const InitializationSettings initSettings =
         InitializationSettings(android: androidSettings);
 
-    // Inicializace pluginu
     bool? initialized = await _notificationsPlugin.initialize(initSettings);
     print("Notification plugin initialized: ${initialized ?? false}");
 
-    // Oprávnění pro notifikace (Android 13+)
     if (await Permission.notification.isDenied) {
       final status = await Permission.notification.request();
       if (status.isDenied) {
@@ -33,6 +30,7 @@ class NotificationService {
     }
   }
 
+  //immediate notification
   static Future<void> showNotification(int id, String title, String body) async {
     const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
       'instant_channel',
@@ -48,6 +46,7 @@ class NotificationService {
     print("Instant notification shown");
   }
 
+  //notification for a certain time
   static Future<void> scheduleNotification(
       int id, String title, String body, DateTime scheduledTime) async {
     final tz.TZDateTime tzScheduledTime = tz.TZDateTime.from(scheduledTime, tz.local);
@@ -80,6 +79,7 @@ class NotificationService {
     print("Scheduled notification set for: $tzScheduledTime");
   }
 
+  //cancel notification
   static Future<void> cancelNotification(int id) async {
     await _notificationsPlugin.cancel(id);
     print("Notification with ID $id cancelled");

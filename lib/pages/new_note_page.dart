@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
-import 'notification_service.dart'; // Uprav podle názvu tvé aplikace
+import 'color.dart';
+import 'notification_service.dart'; 
 import '../models/note.dart';
+
+//page for adding/editing notes
 
 class NewNotePage extends StatefulWidget {
   final Note? existingNote;
@@ -27,9 +30,10 @@ class _NewNotePageState extends State<NewNotePage> {
     _passwordController =
         TextEditingController(text: widget.existingNote?.password ?? '');
     _reminder = widget.existingNote?.reminder;
-    NotificationService.init(); // Inicializace notifikací
+    NotificationService.init(); 
   }
 
+  //function for pick time for notification
   Future<void> _pickReminder() async {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
@@ -68,13 +72,13 @@ class _NewNotePageState extends State<NewNotePage> {
       reminder: _reminder,
     );
   
-    // Naplánuj notifikaci, pokud je nastavena
+    
     if (_reminder != null) {
       NotificationService.scheduleNotification(
-        updatedNote.hashCode, // Unikátní ID na základě hash kódu
+        updatedNote.hashCode, 
         updatedNote.title,
         updatedNote.content,
-        _reminder!, // Použij naplánovaný čas
+        _reminder!, 
       );
     }
 
@@ -85,8 +89,9 @@ class _NewNotePageState extends State<NewNotePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      //header
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(155, 113, 65, 33),
+        backgroundColor: headerBackground,
         title: const Text('Edit Note'),
         actions: [
           IconButton(
@@ -95,27 +100,31 @@ class _NewNotePageState extends State<NewNotePage> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
+      //body (add/edit page)
+      body: SingleChildScrollView(  
         child: Padding(
           padding: const EdgeInsets.all(12.0),
           child: Column(
             children: [
-              TextField(
+              //for title
+              TextField(                          
                 controller: _titleController,
                 decoration: const InputDecoration(
                   labelText: 'Title',
                 ),
               ),
+              //for password
               const SizedBox(height: 16),
-              TextField(
+              TextField(                          
                 controller: _passwordController,
                 decoration: const InputDecoration(
                   labelText: 'Password (optional)',
                 ),
                 obscureText: true,
               ),
+              //for your note
               const SizedBox(height: 16),
-              TextField(
+              TextField(                          
                 controller: _contentController,
                 decoration: const InputDecoration(
                   hintText: 'Enter your note here...',
@@ -124,8 +133,9 @@ class _NewNotePageState extends State<NewNotePage> {
                 maxLines: null,
                 keyboardType: TextInputType.multiline,
               ),
+              //for notice settings
               const SizedBox(height: 16),
-              Row(
+              Row(          
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(

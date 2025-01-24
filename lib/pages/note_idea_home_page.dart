@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'color.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/note.dart';
@@ -20,7 +21,7 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
   void initState() {
     super.initState();
     _loadNotes();
-    filteredNotes = notes; // Default to showing all notes
+    filteredNotes = notes; 
   }
 
   Future<void> _loadNotes() async {
@@ -32,7 +33,7 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
         notes = decodedNotes
             .map((note) => Note.fromJson(note as Map<String, dynamic>))
             .toList();
-        filteredNotes = List.from(notes); // Synchronizace filtrovaných poznámek
+        filteredNotes = List.from(notes); 
       });
     }
   }
@@ -46,7 +47,7 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
   void addNewNote(Note note) {
     setState(() {
       notes.add(note);
-      filteredNotes = List.from(notes); // Aktualizace filtrovaného seznamu
+      filteredNotes = List.from(notes); 
     });
     _saveNotes();
   }
@@ -54,7 +55,7 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
   void updateNote(int index, Note updatedNote) {
     setState(() {
       notes[index] = updatedNote;
-      filteredNotes = List.from(notes); // Aktualizace filtrovaného seznamu
+      filteredNotes = List.from(notes); 
     });
     _saveNotes();
   }
@@ -62,7 +63,7 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
   void deleteNote(int index) {
     setState(() {
       notes.removeAt(index);
-      filteredNotes = List.from(notes); // Aktualizace filtrovaného seznamu
+      filteredNotes = List.from(notes); 
     });
     _saveNotes();
   }
@@ -70,7 +71,7 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
   void updateFilteredNotes(String query) {
     setState(() {
       if (query.isEmpty) {
-        filteredNotes = List.from(notes); // Zobraz všechny poznámky
+        filteredNotes = List.from(notes); 
       } else {
         filteredNotes = notes
             .where((note) =>
@@ -81,6 +82,7 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
     });
   }
 
+  //validate access for note detail
   Future<void> _showPasswordDialog(Note note, int index) async {
     final controller = TextEditingController();
     bool isAuthenticated = false;
@@ -126,6 +128,7 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
     }
   }
 
+  //change the order in the list of notes
   void reorderNotes(int oldIndex, int newIndex) {
     setState(() {
       if (newIndex > oldIndex) {
@@ -133,7 +136,7 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
       }
       final item = notes.removeAt(oldIndex);
       notes.insert(newIndex, item);
-      filteredNotes = List.from(notes); // Synchronizace filtrovaných poznámek
+      filteredNotes = List.from(notes); 
     });
     _saveNotes();
   }
@@ -143,11 +146,11 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
     return Scaffold(
       body: Column(
         children: [
-          // Nadpis a dekorace
+          //header
           Container(
             height: MediaQuery.of(context).size.height * 0.20,
             decoration: BoxDecoration(
-              color: const Color.fromARGB(155, 113, 65, 33)
+              color: headerBackground
             ),
             child: const Center(
               child: Padding(
@@ -163,9 +166,9 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
               ),
             ),
           ),
-          // Vyhledávací pole
+          //search engine
           Container(
-            color: const Color.fromARGB(255, 236, 233, 233),
+            color: bodyBackground,
             padding: const EdgeInsets.all(8.0),
             child: TextField(
               decoration: InputDecoration(
@@ -180,10 +183,11 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
               },
             ),
           ),
-          // Seznam poznámek
+          //body - list of notes
           Expanded(
             child: Container(
-              color: const Color.fromARGB(255, 236, 233, 233),
+              color: bodyBackground
+              ,
               child: ReorderableListView(
                 onReorder: reorderNotes,
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -253,6 +257,7 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
           ),
         ],
       ),
+      //add note button
       floatingActionButton: Container(
         margin: const EdgeInsets.only(bottom: 16.0),
         child: FloatingActionButton(
@@ -267,7 +272,7 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
               addNewNote(newNote);
             }
           },
-          backgroundColor: const Color.fromARGB(255, 157, 172, 158),
+          backgroundColor: addButton,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),

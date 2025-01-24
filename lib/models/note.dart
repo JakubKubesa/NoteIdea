@@ -1,8 +1,8 @@
 class Note {
   final String title;
   final String content;
-  final String? password; // Přidané pole pro heslo (nepovinné)
-  final DateTime? reminder; // Přidané pole pro upozornění (nepovinné)
+  final String? password; 
+  final DateTime? reminder; 
 
   Note({
     required this.title,
@@ -15,10 +15,10 @@ class Note {
     return Note(
       title: json['title'],
       content: json['content'],
-      password: json['password'], // Načítání hesla z JSON
+      password: json['password'], 
       reminder: json['reminder'] != null
           ? DateTime.parse(json['reminder'])
-          : null, // Načítání upozornění z JSON
+          : null, 
     );
   }
 
@@ -26,8 +26,8 @@ class Note {
     return {
       'title': title,
       'content': content,
-      'password': password, // Ukládání hesla do JSON
-      'reminder': reminder?.toIso8601String(), // Ukládání upozornění do JSON
+      'password': password, 
+      'reminder': reminder?.toIso8601String(), 
     };
   }
 }

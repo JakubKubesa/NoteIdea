@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'color.dart';
 import '../models/note.dart';
 import 'new_note_page.dart';
+
+//page to view note details
 
 class NoteDetailPage extends StatelessWidget {
   final Note note;
@@ -17,10 +20,12 @@ class NoteDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      //header
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(155, 113, 65, 33),
+        backgroundColor: headerBackground,
         title: Text(note.title),
         actions: [
+          //icon for delete
           IconButton(
             icon: const Icon(Icons.delete),
             onPressed: () {
@@ -28,6 +33,7 @@ class NoteDetailPage extends StatelessWidget {
               Navigator.pop(context);
             },
           ),
+          //icon for update
           IconButton(
             icon: const Icon(Icons.edit),
             onPressed: () async {
@@ -46,6 +52,7 @@ class NoteDetailPage extends StatelessWidget {
           ),
         ],
       ),
+      //body - view of note text
       body: SingleChildScrollView(
         child: Container(
           color: Colors.white,
