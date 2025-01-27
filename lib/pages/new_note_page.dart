@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'color.dart';
-import 'notification_service.dart'; 
+import 'additional_files/color.dart';
+import 'additional_files/notification_service.dart'; 
 import 'note_idea_home_page.dart';
 import 'settings.dart';
-import 'bottom_menu.dart';
+import 'additional_files/bottom_menu.dart';
 import '../models/note.dart';
 
 //page for adding/editing notes
@@ -157,13 +157,14 @@ class _NewNotePageState extends State<NewNotePage> {
           ),
         ),
       ),
+      //menu
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       bottomNavigationBar: BottomMenu(
         currentIndex: 1,
         onItemSelected: (index) {
           switch (index) {
             case 0:
-              Navigator.pushReplacement(
+              Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const NoteIdeaHomePage()),
               );
@@ -171,7 +172,7 @@ class _NewNotePageState extends State<NewNotePage> {
             case 1:
               break;
             case 2:
-              Navigator.pushReplacement(
+              Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const SettingsPage()),
               );

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'note_idea_home_page.dart';
 import 'new_note_page.dart';
-import 'bottom_menu.dart';
-import 'color.dart';
+import 'additional_files/bottom_menu.dart';
+import 'additional_files/color.dart';
+import '../models/note.dart';
+
 
 // Page for settings notes
 
@@ -25,22 +27,26 @@ class _SettingsPageState extends State<SettingsPage> {
       body: const Center(
         child: Text('Tady bude nastavení'),
       ),
+      // menu
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       bottomNavigationBar: BottomMenu(
         currentIndex: 2,
-        onItemSelected: (index) {
+        onItemSelected: (index) async {
           switch (index) {
             case 0:
-              Navigator.pushReplacement(
+              Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const NoteIdeaHomePage()),
               );
               break;
             case 1:
-              Navigator.pushReplacement(
+              final newNote = await Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const NewNotePage()),
               );
+              if (newNote != null && newNote is Note) {
+                Navigator.pop(context, newNote);
+              }
               break;
             case 2:
               break;

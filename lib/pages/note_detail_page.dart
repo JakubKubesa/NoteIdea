@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'color.dart';
+import 'additional_files/color.dart';
 import '../models/note.dart';
 import 'new_note_page.dart';
 

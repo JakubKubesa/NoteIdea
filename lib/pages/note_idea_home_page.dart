@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'color.dart';
+import 'additional_files/color.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'bottom_menu.dart';
+import 'additional_files/bottom_menu.dart';
 import '../models/note.dart';
 import 'new_note_page.dart';
 import 'note_detail_page.dart';
@@ -145,6 +145,18 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
     _saveNotes();
   }
 
+  //function for saving note when you klick to add note from other way than main page
+  Future<void> _handleNewNoteFromSettings() async {
+    final newNote = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const SettingsPage()),
+    );
+  
+    if (newNote != null && newNote is Note) {
+      addNewNote(newNote);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -265,21 +277,21 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       bottomNavigationBar: BottomMenu(
         currentIndex: 0,
-        onItemSelected: (index) {
+        onItemSelected: (index) async {
           switch (index) {
             case 0:
               break;
             case 1:
-              Navigator.pushReplacement(
+              final newNote = await Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const NewNotePage()),
               );
+              if (newNote != null && newNote is Note) {
+                addNewNote(newNote);
+              }
               break;
             case 2:
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => const SettingsPage()),
-              );
+              _handleNewNoteFromSettings();
               break;
           }
         },
