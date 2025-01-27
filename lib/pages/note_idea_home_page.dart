@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'color.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'bottom_menu.dart';
 import '../models/note.dart';
 import 'new_note_page.dart';
 import 'note_detail_page.dart';
+import 'settings.dart';
+
+//main page
 
 class NoteIdeaHomePage extends StatefulWidget {
   const NoteIdeaHomePage({super.key});
@@ -257,33 +261,29 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
           ),
         ],
       ),
-      //add note button
-      floatingActionButton: Container(
-        margin: const EdgeInsets.only(bottom: 16.0),
-        child: FloatingActionButton(
-          onPressed: () async {
-            final newNote = await Navigator.push<Note>(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const NewNotePage(),
-              ),
-            );
-            if (newNote != null) {
-              addNewNote(newNote);
-            }
-          },
-          backgroundColor: addButton,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: const Icon(
-            Icons.add,
-            size: 30,
-            color: Colors.white,
-          ),
-        ),
-      ),
+      //bottom menu
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      bottomNavigationBar: BottomMenu(
+        currentIndex: 0,
+        onItemSelected: (index) {
+          switch (index) {
+            case 0:
+              break;
+            case 1:
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const NewNotePage()),
+              );
+              break;
+            case 2:
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const SettingsPage()),
+              );
+              break;
+          }
+        },
+      ),
     );
   }
 }
