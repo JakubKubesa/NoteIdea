@@ -7,6 +7,7 @@ import '../models/note.dart';
 import 'new_note_page.dart';
 import 'note_detail_page.dart';
 import 'settings.dart';
+import 'category.dart';
 
 //main page
 
@@ -145,18 +146,6 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
     _saveNotes();
   }
 
-  //function for saving note when you klick to add note from other way than main page
-  Future<void> _handleNewNoteFromSettings() async {
-    final newNote = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const SettingsPage()),
-    );
-  
-    if (newNote != null && newNote is Note) {
-      addNewNote(newNote);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -182,6 +171,8 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
               ),
             ),
           ),
+
+          
           //search engine
           Container(
             color: bodyBackground,
@@ -210,16 +201,12 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
                 children: List.generate(
                   filteredNotes.length,
                   (index) {
-                    String shortContent = filteredNotes[index].content.length > 30
-                        ? filteredNotes[index].content.substring(0, 30) + '...'
-                        : filteredNotes[index].content;
-  
                     return Container(
                       key: ValueKey(filteredNotes[index].title),
                       margin:
-                          const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                          const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
                       decoration: BoxDecoration(
-                        color: Colors.blue.shade50,
+                        color: Colors.white,
                         borderRadius: BorderRadius.circular(12),
                         boxShadow: const [
                           BoxShadow(
@@ -237,15 +224,6 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
-                        ),
-                        subtitle: Text(
-                          shortContent,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: Colors.black54,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
                         ),
                         onTap: () {
                           if (filteredNotes[index].password != null) {
@@ -282,19 +260,51 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
             case 0:
               break;
             case 1:
-              final newNote = await Navigator.push(
+              Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const NewNotePage()),
+                MaterialPageRoute(builder: (context) => const CategoryPage()),
               );
-              if (newNote != null && newNote is Note) {
-                addNewNote(newNote);
-              }
               break;
             case 2:
-              _handleNewNoteFromSettings();
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SettingsPage()),
+              );
               break;
           }
         },
+      ),
+      //button add note
+      floatingActionButton: Stack(
+        children: [
+          Positioned(
+            top: 105,
+            right: 1,
+            child: FloatingActionButton(
+              onPressed: () async {
+                final newNote = await Navigator.push<Note>(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const NewNotePage(),
+                  ),
+                );
+                if (newNote != null) {
+                  addNewNote(newNote);
+                }
+              },
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(50),
+              ),
+              child: const Icon(
+                Icons.add,
+                size: 30,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

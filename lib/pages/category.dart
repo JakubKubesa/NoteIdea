@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 import 'note_idea_home_page.dart';
 import 'new_note_page.dart';
-import 'category.dart';
 import 'additional_files/bottom_menu.dart';
 import 'additional_files/color.dart';
 import '../models/note.dart';
+import 'settings.dart';
 
 
-// Page for settings notes
 
-class SettingsPage extends StatefulWidget {
-  const SettingsPage({Key? key}) : super(key: key);
+// Page for categories
+class CategoryPage extends StatefulWidget {
+  const CategoryPage({Key? key}) : super(key: key);
 
   @override
-  _SettingsPageState createState() => _SettingsPageState();
+  _CategoryPageState createState() => _CategoryPageState();
 }
 
-class _SettingsPageState extends State<SettingsPage> {
+class _CategoryPageState extends State<CategoryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,7 +32,7 @@ class _SettingsPageState extends State<SettingsPage> {
               child: const Padding(
                 padding: EdgeInsets.only(top: 28, left: 10),
                 child: Text(
-                  'Settings',
+                  'Category',
                   style: TextStyle(
                     color: Colors.black,
                     fontSize: 24,
@@ -46,25 +46,25 @@ class _SettingsPageState extends State<SettingsPage> {
           ],
         ),
       ),
-      // menu
+      // Menu
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       bottomNavigationBar: BottomMenu(
-        currentIndex: 2,
+        currentIndex: 1,
         onItemSelected: (index) async {
           switch (index) {
             case 0:
-              Navigator.push(
+              Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(builder: (context) => const NoteIdeaHomePage()),
               );
               break;
             case 1:
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const CategoryPage()),
-              );
               break;
             case 2:
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const SettingsPage()),
+              );
               break;
           }
         },

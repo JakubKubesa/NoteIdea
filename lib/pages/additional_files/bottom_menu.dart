@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'color.dart';
 
 //menu
 
@@ -15,6 +16,7 @@ class BottomMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
+      backgroundColor: bodyBackground,
       currentIndex: currentIndex,
       onTap: onItemSelected,
       items: const [
@@ -23,8 +25,8 @@ class BottomMenu extends StatelessWidget {
           label: 'Main Page',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.note_add),
-          label: 'Add note',
+          icon: Icon(Icons.category),
+          label: 'Category',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.settings),
