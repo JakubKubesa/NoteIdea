@@ -22,7 +22,7 @@ class _CategoryPageState extends State<CategoryPage> {
     return Scaffold(
       // Custom Header
       body: Container(
-        color: bodyBackground, // Nastavení barvy pozadí
+        color: bodyBackground,
         child: Column(
           children: [
             Container(
@@ -41,7 +41,7 @@ class _CategoryPageState extends State<CategoryPage> {
               ),
             ),
             const Expanded(
-              child: SizedBox(), // Zajištění, že zbývající prostor má barvu pozadí
+              child: SizedBox(),
             ),
           ],
         ),
