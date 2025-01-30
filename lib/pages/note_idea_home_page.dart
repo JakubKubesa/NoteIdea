@@ -171,8 +171,6 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
               ),
             ),
           ),
-
-          
           //search engine
           Container(
             color: bodyBackground,

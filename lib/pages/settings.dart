@@ -20,31 +20,17 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Custom Header
+      //Header
+      appBar: AppBar(
+        backgroundColor: headerBackground,
+        automaticallyImplyLeading: false,
+        title: const Text(
+          'Settings',
+          style: TextStyle(color: Colors.white),
+        ),
+      ),
       body: Container(
         color: bodyBackground,
-        child: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
-              width: double.infinity,
-              color: headerBackground,
-              child: const Padding(
-                padding: EdgeInsets.only(top: 28, left: 10),
-                child: Text(
-                  'Settings',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 24,
-                  ),
-                ),
-              ),
-            ),
-            const Expanded(
-              child: SizedBox(),
-            ),
-          ],
-        ),
       ),
       // menu
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,

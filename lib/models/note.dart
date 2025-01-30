@@ -3,12 +3,14 @@ class Note {
   final String content;
   final String? password; 
   final DateTime? reminder; 
+  final String? category;
 
   Note({
     required this.title,
     required this.content,
     this.password,
     this.reminder,
+    this.category,
   });
 
   factory Note.fromJson(Map<String, dynamic> json) {
@@ -18,7 +20,8 @@ class Note {
       password: json['password'], 
       reminder: json['reminder'] != null
           ? DateTime.parse(json['reminder'])
-          : null, 
+          : null,
+      category: json['category'],
     );
   }
 
@@ -27,7 +30,8 @@ class Note {
       'title': title,
       'content': content,
       'password': password, 
-      'reminder': reminder?.toIso8601String(), 
+      'reminder': reminder?.toIso8601String(),
+      'category': category,
     };
   }
 }

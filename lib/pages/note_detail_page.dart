@@ -23,19 +23,28 @@ class NoteDetailPage extends StatelessWidget {
       //header
       appBar: AppBar(
         backgroundColor: headerBackground,
-        title: Text(note.title),
+        title: Text(
+          note.title,
+          style: TextStyle(color: Colors.white),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
         actions: [
-          //icon for delete
+          // Icon for delete
           IconButton(
-            icon: const Icon(Icons.delete),
+            icon: const Icon(Icons.delete, color: Colors.white),
             onPressed: () {
               onDelete();
               Navigator.pop(context);
             },
           ),
-          //icon for update
+          // Icon for edit
           IconButton(
-            icon: const Icon(Icons.edit),
+            icon: const Icon(Icons.edit, color: Colors.white),
             onPressed: () async {
               final updatedNote = await Navigator.push<Note>(
                 context,

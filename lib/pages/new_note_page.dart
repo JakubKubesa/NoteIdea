@@ -4,6 +4,7 @@ import 'additional_files/notification_service.dart';
 import 'note_idea_home_page.dart';
 import 'additional_files/bottom_menu.dart';
 import '../models/note.dart';
+import 'additional_files/category_list.dart';
 
 //page for adding/editing notes
 
@@ -21,6 +22,7 @@ class _NewNotePageState extends State<NewNotePage> {
   late TextEditingController _contentController;
   late TextEditingController _passwordController;
   DateTime? _reminder;
+  String? _selectedCategory;
 
   @override
   void initState() {
@@ -32,6 +34,7 @@ class _NewNotePageState extends State<NewNotePage> {
     _passwordController =
         TextEditingController(text: widget.existingNote?.password ?? '');
     _reminder = widget.existingNote?.reminder;
+    _selectedCategory = widget.existingNote?.category;
     NotificationService.init(); 
   }
 
@@ -72,6 +75,7 @@ class _NewNotePageState extends State<NewNotePage> {
           ? _passwordController.text
           : null,
       reminder: _reminder,
+      category: _selectedCategory,
     );
   
     
@@ -94,10 +98,19 @@ class _NewNotePageState extends State<NewNotePage> {
       //header
       appBar: AppBar(
         backgroundColor: headerBackground,
-        title: const Text('Edit Note'),
+        title: const Text(
+          'Edit Note',
+          style: TextStyle(color: Colors.white),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.save),
+            icon: const Icon(Icons.save, color: Colors.white),
             onPressed: _saveNote,
           ),
         ],
@@ -142,7 +155,7 @@ class _NewNotePageState extends State<NewNotePage> {
                 children: [
                   Text(
                     _reminder != null
-                        ? 'Reminder: ${_reminder!.toLocal()}'
+                        ? 'Reminder: \${_reminder!.toLocal()}'
                         : 'No reminder set',
                   ),
                   TextButton.icon(
@@ -151,6 +164,27 @@ class _NewNotePageState extends State<NewNotePage> {
                     label: const Text('Set Reminder'),
                   ),
                 ],
+              ),
+              //Select category
+              const SizedBox(height: 16),
+              DropdownButtonFormField<String>(
+                value: _selectedCategory,
+                hint: const Text('Select Category'),
+                items: categories.map((String category) {
+                  return DropdownMenuItem<String>(
+                    value: category,
+                    child: Text(category),
+                  );
+                }).toList(),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    _selectedCategory = newValue;
+                  });
+                },
+                decoration: const InputDecoration(
+                  labelText: 'Category',
+                  border: OutlineInputBorder(),
+                ),
               ),
             ],
           ),
