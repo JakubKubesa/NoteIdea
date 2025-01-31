@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 import 'note_idea_home_page.dart';
 import 'additional_files/bottom_menu.dart';
 import 'additional_files/color.dart';
 import 'settings.dart';
 import 'additional_files/category_list.dart';
+import '../models/note.dart';
 
 class CategoryPage extends StatefulWidget {
   const CategoryPage({Key? key}) : super(key: key);
@@ -13,15 +16,30 @@ class CategoryPage extends StatefulWidget {
 }
 
 class _CategoryPageState extends State<CategoryPage> {
+  List<Note> notes = []; // Seznam poznámek
+
   @override
   void initState() {
     super.initState();
     _loadCategories();
+    _loadNotes(); // Načtení poznámek
   }
 
   Future<void> _loadCategories() async {
     await loadCategories();
     setState(() {});
+  }
+
+  Future<void> _loadNotes() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? savedNotes = prefs.getString('notes');
+
+    if (savedNotes != null) {
+      List<dynamic> decodedNotes = jsonDecode(savedNotes);
+      setState(() {
+        notes = decodedNotes.map((note) => Note.fromJson(note)).toList();
+      });
+    }
   }
 
   void _addCategory() {
@@ -58,10 +76,29 @@ class _CategoryPageState extends State<CategoryPage> {
     );
   }
 
+  //delete category with vertification
   void _deleteCategory(String category) {
-    setState(() {
-      removeCategory(category);
-    });
+    bool isCategoryUsed = notes.any((note) => note.category == category);
+
+    if (isCategoryUsed) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Cannot Delete Category'),
+          content: const Text('This category is assigned to a note and cannot be deleted.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+    } else {
+      setState(() {
+        removeCategory(category);
+      });
+    }
   }
 
   @override
@@ -110,26 +147,7 @@ class _CategoryPageState extends State<CategoryPage> {
                 trailing: IconButton(
                   icon: const Icon(Icons.delete, color: Colors.red),
                   onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: const Text('Delete Category'),
-                        content: Text('Are you sure you want to delete "${categories[index]}"?'),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: const Text('Cancel'),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              _deleteCategory(categories[index]);
-                              Navigator.pop(context);
-                            },
-                            child: const Text('Delete', style: TextStyle(color: Colors.red)),
-                          ),
-                        ],
-                      ),
-                    );
+                    _deleteCategory(categories[index]);
                   },
                 ),
               ),
