@@ -190,15 +190,15 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
                       prefixIcon: const Icon(Icons.search),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: Colors.black), // Černý rámeček
+                        borderSide: BorderSide(color: Colors.black),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: Colors.black), // Černý rámeček když není aktivní
+                        borderSide: BorderSide(color: Colors.black),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: Colors.black, width: 2), // Silnější černý rámeček při focusu
+                        borderSide: BorderSide(color: Colors.black, width: 2),
                       ),
                     ),
                     onChanged: (query) {
