@@ -159,7 +159,7 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
           Container(
             height: MediaQuery.of(context).size.height * 0.20,
             decoration: BoxDecoration(
-              color: headerBackground
+              color: headerBackground,
             ),
             child: const Center(
               child: Padding(
@@ -184,10 +184,21 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
                 Expanded(
                   child: TextField(
                     decoration: InputDecoration(
+                      fillColor: filterBackground,
+                      filled: true,
                       hintText: 'Search notes...',
                       prefixIcon: const Icon(Icons.search),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Colors.black), // Černý rámeček
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Colors.black), // Černý rámeček když není aktivní
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Colors.black, width: 2), // Silnější černý rámeček při focusu
                       ),
                     ),
                     onChanged: (query) {
@@ -195,29 +206,53 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
                     },
                   ),
                 ),
-                const SizedBox(width: 8),
-                // Category filter dropdown
-                DropdownButton<String>(
-                  value: selectedCategory,
-                  hint: const Text('Select Category'),
-                  onChanged: (value) {
-                    setState(() {
-                      selectedCategory = value;
-                      updateFilteredNotes('');
-                    });
-                  },
-                  items: [
-                    DropdownMenuItem<String>(
-                      value: null,
-                      child: Text('Select Category'),
+                SizedBox(width: 8),
+                //category filter
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.black),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 4,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<String>(
+                      value: selectedCategory,
+                      hint: Row(
+                        children: [
+                          Icon(Icons.filter_list, color: Colors.grey),
+                          SizedBox(width: 8),
+                          Text('Select Category', style: TextStyle(color: Colors.black87)),
+                        ],
+                      ),
+                      icon: Icon(Icons.arrow_drop_down, color: Colors.grey),
+                      onChanged: (value) {
+                        setState(() {
+                          selectedCategory = value;
+                          updateFilteredNotes('');
+                        });
+                      },
+                      items: [
+                        DropdownMenuItem<String>(
+                          value: null,
+                          child: Text('Select Category'),
+                        ),
+                        ...categories.map<DropdownMenuItem<String>>((String category) {
+                          return DropdownMenuItem<String>(
+                            value: category,
+                            child: Text(category),
+                          );
+                        }).toList(),
+                      ],
                     ),
-                    ...categories.map<DropdownMenuItem<String>>((String category) {
-                      return DropdownMenuItem<String>(
-                        value: category,
-                        child: Text(category),
-                      );
-                    }).toList(),
-                  ],
+                  ),
                 ),
               ],
             ),
