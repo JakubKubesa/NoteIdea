@@ -22,6 +22,7 @@ class NoteIdeaHomePage extends StatefulWidget {
 class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
   List<Note> notes = [];
   List<Note> filteredNotes = [];
+  String? selectedCategory;  
 
   @override
   void initState() {
@@ -82,15 +83,11 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
 
   void updateFilteredNotes(String query) {
     setState(() {
-      if (query.isEmpty) {
-        filteredNotes = List.from(notes); 
-      } else {
-        filteredNotes = notes
-            .where((note) =>
-                note.title.toLowerCase().contains(query.toLowerCase()) ||
-                note.content.toLowerCase().contains(query.toLowerCase()))
-            .toList();
-      }
+      filteredNotes = notes.where((note) {
+        final matchesQuery = note.title.toLowerCase().contains(query.toLowerCase());
+        final matchesCategory = selectedCategory == null || note.category == selectedCategory;
+        return matchesQuery && matchesCategory;
+      }).toList();
     });
   }
 
@@ -177,22 +174,52 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
                 ),
               ),
             ),
-          ),
-          //search engine
+          ),// search and category filter
           Container(
             color: bodyBackground,
             padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: 'Search notes...',
-                prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+            child: Row(
+              children: [
+                // Search field
+                Expanded(
+                  child: TextField(
+                    decoration: InputDecoration(
+                      hintText: 'Search notes...',
+                      prefixIcon: const Icon(Icons.search),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    onChanged: (query) {
+                      updateFilteredNotes(query);
+                    },
+                  ),
                 ),
-              ),
-              onChanged: (query) {
-                updateFilteredNotes(query);
-              },
+                const SizedBox(width: 8),
+                // Category filter dropdown
+                DropdownButton<String>(
+                  value: selectedCategory,
+                  hint: const Text('Select Category'),
+                  onChanged: (value) {
+                    setState(() {
+                      selectedCategory = value;
+                      updateFilteredNotes('');
+                    });
+                  },
+                  items: [
+                    DropdownMenuItem<String>(
+                      value: null,
+                      child: Text('Select Category'),
+                    ),
+                    ...categories.map<DropdownMenuItem<String>>((String category) {
+                      return DropdownMenuItem<String>(
+                        value: category,
+                        child: Text(category),
+                      );
+                    }).toList(),
+                  ],
+                ),
+              ],
             ),
           ),
           //body - list of notes

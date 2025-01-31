@@ -16,13 +16,13 @@ class CategoryPage extends StatefulWidget {
 }
 
 class _CategoryPageState extends State<CategoryPage> {
-  List<Note> notes = []; // Seznam poznámek
+  List<Note> notes = [];
 
   @override
   void initState() {
     super.initState();
     _loadCategories();
-    _loadNotes(); // Načtení poznámek
+    _loadNotes();
   }
 
   Future<void> _loadCategories() async {
