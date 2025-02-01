@@ -61,16 +61,41 @@ class NoteDetailPage extends StatelessWidget {
           ),
         ],
       ),
-      //body - view of note text
-      body: SingleChildScrollView(
-        child: Container(
-          color: Colors.white,
-          width: double.infinity,
-          padding: const EdgeInsets.all(16.0),
-          child: Text(
-            note.content,
-            style: const TextStyle(fontSize: 16),
-          ),
+      body: Container(
+        color: white,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(16.0),
+                child: Container(
+                  color: Colors.white,
+                  width: double.infinity,
+                  child: Text(
+                    note.content,
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                ),
+              ),
+            ),
+            if (note.category != null && note.category!.isNotEmpty)
+              Container(
+                color: noteCategoryBackground,
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                child: Align(
+                  alignment: Alignment.bottomRight,
+                  child: Text(
+                    'Category: ${note.category}',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+          ],
         ),
       ),
     );
