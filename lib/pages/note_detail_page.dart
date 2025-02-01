@@ -66,6 +66,7 @@ class NoteDetailPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            //content
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(16.0),
@@ -79,6 +80,7 @@ class NoteDetailPage extends StatelessWidget {
                 ),
               ),
             ),
+            //category
             if (note.category != null && note.category!.isNotEmpty)
               Container(
                 color: noteCategoryBackground,
