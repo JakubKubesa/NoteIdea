@@ -211,7 +211,7 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 2),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: categoryBackground,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: Colors.black),
                     boxShadow: [
@@ -271,7 +271,7 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
                     return Container(
                       key: ValueKey(filteredNotes[index].title),
                       margin:
-                          const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
+                          const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(12),
@@ -284,7 +284,7 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
                         ],
                       ),
                       child: ListTile(
-                        contentPadding: const EdgeInsets.all(16),
+                        contentPadding: const EdgeInsets.all(12),
                         title: Text(
                           filteredNotes[index].title,
                           style: const TextStyle(
