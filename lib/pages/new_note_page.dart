@@ -120,53 +120,30 @@ class _NewNotePageState extends State<NewNotePage> {
         child: Padding(
           padding: const EdgeInsets.all(12.0),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               //for title
-              TextField(                          
+              TextField(
                 controller: _titleController,
                 decoration: const InputDecoration(
                   labelText: 'Title',
+                  border: OutlineInputBorder(),
                 ),
               ),
-              //for password
               const SizedBox(height: 16),
-              TextField(                          
-                controller: _passwordController,
-                decoration: const InputDecoration(
-                  labelText: 'Password (optional)',
-                ),
-                obscureText: true,
-              ),
               //for your note
-              const SizedBox(height: 16),
-              TextField(                          
+              TextField(
                 controller: _contentController,
                 decoration: const InputDecoration(
                   hintText: 'Enter your note here...',
                   border: OutlineInputBorder(),
                 ),
                 maxLines: null,
+                minLines: 10,
                 keyboardType: TextInputType.multiline,
               ),
-              //for notice settings
               const SizedBox(height: 16),
-              Row(          
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    _reminder != null
-                        ? 'Reminder: \${_reminder!.toLocal()}'
-                        : 'No reminder set',
-                  ),
-                  TextButton.icon(
-                    onPressed: _pickReminder,
-                    icon: const Icon(Icons.alarm),
-                    label: const Text('Set Reminder'),
-                  ),
-                ],
-              ),
               //Select category
-              const SizedBox(height: 16),
               DropdownButtonFormField<String>(
                 value: _selectedCategory,
                 hint: const Text('Select Category'),
@@ -185,6 +162,33 @@ class _NewNotePageState extends State<NewNotePage> {
                   labelText: 'Category',
                   border: OutlineInputBorder(),
                 ),
+              ),
+              const SizedBox(height: 16),
+              //for password
+              TextField(
+                controller: _passwordController,
+                obscureText: true,
+                decoration: const InputDecoration(
+                  labelText: 'Password (optional)',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 16),
+              //for notice settings
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    _reminder != null
+                        ? 'Reminder: \${_reminder!.toLocal()}'.split(' ')[0]
+                        : 'No reminder set',
+                  ),
+                  TextButton.icon(
+                    onPressed: _pickReminder,
+                    icon: const Icon(Icons.alarm),
+                    label: const Text('Set Reminder'),
+                  ),
+                ],
               ),
             ],
           ),
