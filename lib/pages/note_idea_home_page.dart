@@ -22,6 +22,7 @@ class NoteIdeaHomePage extends StatefulWidget {
 class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
   List<Note> notes = [];
   List<Note> filteredNotes = [];
+  bool _isDarkMode = false;
   String? selectedCategory;  
 
   @override
@@ -29,6 +30,7 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
     super.initState();
     _loadNotes();
     _loadCategories();
+    _loadDarkModePreference();
     filteredNotes = notes; 
   }
 
@@ -88,6 +90,22 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
         final matchesCategory = selectedCategory == null || note.category == selectedCategory;
         return matchesQuery && matchesCategory;
       }).toList();
+    });
+  }
+
+  //Dark mode
+  Future<void> _loadDarkModePreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _isDarkMode = prefs.getBool('dark_mode') ?? false;
+    });
+  }
+
+  Future<void> _toggleDarkMode(bool value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('dark_mode', value);
+    setState(() {
+      _isDarkMode = value;
     });
   }
 
@@ -176,7 +194,7 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
             ),
           ),// search and category filter
           Container(
-            color: bodyBackground,
+            color: _isDarkMode ? Colors.black : bodyBackground,
             padding: const EdgeInsets.all(8.0),
             child: Row(
               children: [
@@ -184,9 +202,12 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
                 Expanded(
                   child: TextField(
                     decoration: InputDecoration(
-                      fillColor: filterBackground,
+                      fillColor: _isDarkMode ? filterBackgroundDark : filterBackground,
                       filled: true,
                       hintText: 'Search notes...',
+                      hintStyle: TextStyle(
+                        color: _isDarkMode ? Colors.white : Colors.grey,
+                      ),
                       prefixIcon: const Icon(Icons.search),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -211,7 +232,7 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 2),
                   decoration: BoxDecoration(
-                    color: categoryBackground,
+                    color: _isDarkMode ?  categoryBackgroundDark : categoryBackground,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: Colors.black),
                     boxShadow: [
@@ -229,10 +250,19 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
                         children: [
                           Icon(Icons.filter_list, color: Colors.grey),
                           SizedBox(width: 8),
-                          Text('Select Category', style: TextStyle(color: Colors.black87)),
+                          Text(
+                            'Select Category',
+                            style: TextStyle(
+                              color: _isDarkMode ? Colors.white : Colors.black, 
+                            ),
+                          ),
                         ],
                       ),
                       icon: Icon(Icons.arrow_drop_down, color: Colors.grey),
+                      dropdownColor: _isDarkMode ? Colors.black : Colors.white,
+                      style: TextStyle(
+                        color: _isDarkMode ? Colors.white : Colors.black,
+                      ),
                       onChanged: (value) {
                         setState(() {
                           selectedCategory = value;
@@ -242,12 +272,22 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
                       items: [
                         DropdownMenuItem<String>(
                           value: null,
-                          child: Text('Select Category'),
+                          child: Text(
+                            'Select Category',
+                            style: TextStyle(
+                              color: _isDarkMode ? Colors.white : Colors.black, 
+                            ),
+                          ),
                         ),
                         ...categories.map<DropdownMenuItem<String>>((String category) {
                           return DropdownMenuItem<String>(
                             value: category,
-                            child: Text(category),
+                            child: Text(
+                              category,
+                              style: TextStyle(
+                                color: _isDarkMode ? Colors.white : Colors.black,  
+                              ),
+                            ),
                           );
                         }).toList(),
                       ],
@@ -260,8 +300,7 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
           //body - list of notes
           Expanded(
             child: Container(
-              color: bodyBackground
-              ,
+              color: _isDarkMode ? Colors.black : bodyBackground,
               child: ReorderableListView(
                 onReorder: reorderNotes,
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -273,7 +312,7 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
                       margin:
                           const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: _isDarkMode  ? listBackgroundDart : Colors.white,
                         borderRadius: BorderRadius.circular(12),
                         boxShadow: const [
                           BoxShadow(
@@ -290,6 +329,7 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
+                            color: Colors.black,
                           ),
                         ),
                         onTap: () {
@@ -321,6 +361,7 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
       //bottom menu
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       bottomNavigationBar: BottomMenu(
+        isDarkMode: _isDarkMode,
         currentIndex: 0,
         onItemSelected: (index) async {
           switch (index) {

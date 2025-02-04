@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'note_idea_home_page.dart';
-import 'new_note_page.dart';
 import 'category.dart';
 import 'additional_files/bottom_menu.dart';
 import 'additional_files/color.dart';
-import '../models/note.dart';
-
-
-// Page for settings notes
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({Key? key}) : super(key: key);
@@ -17,10 +13,32 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
+  bool _isDarkMode = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadDarkModePreference();
+  }
+
+  Future<void> _loadDarkModePreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _isDarkMode = prefs.getBool('dark_mode') ?? false;
+    });
+  }
+
+  Future<void> _toggleDarkMode(bool value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('dark_mode', value);
+    setState(() {
+      _isDarkMode = value;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //Header
       appBar: AppBar(
         backgroundColor: headerBackground,
         automaticallyImplyLeading: false,
@@ -29,13 +47,30 @@ class _SettingsPageState extends State<SettingsPage> {
           style: TextStyle(color: Colors.white),
         ),
       ),
+      //Dark mode settings
       body: Container(
-        color: bodyBackground,
+        color: _isDarkMode ? Colors.black : bodyBackground,
+        child: ListView(
+          children: [
+            ListTile(
+              title: Text(
+                "Dark Mode",
+                style: TextStyle(
+                  color: _isDarkMode ? Colors.white : Colors.black,
+                ),
+              ),
+              trailing: Switch(
+                value: _isDarkMode,
+                onChanged: _toggleDarkMode,
+              ),
+            ),
+          ],
+        ),
       ),
-      // menu
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       bottomNavigationBar: BottomMenu(
         currentIndex: 2,
+        isDarkMode: _isDarkMode,
         onItemSelected: (index) async {
           switch (index) {
             case 0:

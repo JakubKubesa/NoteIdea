@@ -17,10 +17,12 @@ class CategoryPage extends StatefulWidget {
 
 class _CategoryPageState extends State<CategoryPage> {
   List<Note> notes = [];
+  bool _isDarkMode = false;
 
   @override
   void initState() {
     super.initState();
+    _loadDarkModePreference();
     _loadCategories();
     _loadNotes();
   }
@@ -40,6 +42,22 @@ class _CategoryPageState extends State<CategoryPage> {
         notes = decodedNotes.map((note) => Note.fromJson(note)).toList();
       });
     }
+  }
+
+  //Dark mode settings
+  Future<void> _loadDarkModePreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _isDarkMode = prefs.getBool('dark_mode') ?? false;
+    });
+  }
+
+  Future<void> _toggleDarkMode(bool value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('dark_mode', value);
+    setState(() {
+      _isDarkMode = value;
+    });
   }
 
   void _addCategory() {
@@ -124,31 +142,39 @@ class _CategoryPageState extends State<CategoryPage> {
       ),
       //body
       body: Container(
-        color: bodyBackground,
+        color: _isDarkMode ? Colors.black : bodyBackground,
         padding: const EdgeInsets.all(16.0),
         child: ListView.builder(
           itemCount: categories.length,
           itemBuilder: (context, index) {
             return Card(
+              elevation: 4,
+              margin: const EdgeInsets.only(bottom: 16),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
-              elevation: 4,
-              margin: const EdgeInsets.only(bottom: 16),
-              child: ListTile(
-                contentPadding: const EdgeInsets.all(12),
-                title: Text(
-                  categories[index],
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                trailing: IconButton(
-                  icon: const Icon(Icons.delete, color: Colors.red),
-                  onPressed: () {
-                    _deleteCategory(categories[index]);
-                  },
+              color: _isDarkMode ? listBackgroundDart : Colors.white,
+              child: Padding(
+                padding: const EdgeInsets.all(12.0), 
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        categories[index],
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black, 
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.delete, color: Colors.red),
+                      onPressed: () {
+                        _deleteCategory(categories[index]);
+                      },
+                    ),
+                  ],
                 ),
               ),
             );
@@ -158,6 +184,7 @@ class _CategoryPageState extends State<CategoryPage> {
       //menu
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       bottomNavigationBar: BottomMenu(
+        isDarkMode: _isDarkMode,
         currentIndex: 1,
         onItemSelected: (index) {
           switch (index) {
