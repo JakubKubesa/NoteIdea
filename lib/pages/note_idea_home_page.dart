@@ -297,7 +297,6 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
               ],
             ),
           ),
-          //body - list of notes
           Expanded(
             child: Container(
               color: _isDarkMode ? Colors.black : bodyBackground,
@@ -309,10 +308,9 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
                   (index) {
                     return Container(
                       key: ValueKey(filteredNotes[index].title),
-                      margin:
-                          const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
+                      margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
                       decoration: BoxDecoration(
-                        color: _isDarkMode  ? listBackgroundDart : Colors.white,
+                        color: _isDarkMode ? listBackgroundDart : Colors.white,
                         borderRadius: BorderRadius.circular(12),
                         boxShadow: const [
                           BoxShadow(
@@ -332,6 +330,9 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
                             color: Colors.black,
                           ),
                         ),
+                        trailing: filteredNotes[index].password != null
+                            ? Icon(Icons.lock, color: Colors.grey)
+                            : null,
                         onTap: () {
                           if (filteredNotes[index].password != null) {
                             _showPasswordDialog(filteredNotes[index], index);
@@ -342,8 +343,7 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
                                 builder: (context) => NoteDetailPage(
                                   note: filteredNotes[index],
                                   onDelete: () => deleteNote(index),
-                                  onUpdate: (updatedNote) =>
-                                      updateNote(index, updatedNote),
+                                  onUpdate: (updatedNote) => updateNote(index, updatedNote),
                                 ),
                               ),
                             );
