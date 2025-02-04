@@ -15,3 +15,4 @@ const bodyBackgroundDark = Color.fromARGB(255,0,0,0);
 const listBackgroundDart = Color.fromARGB(255,96,96,96);
 const filterBackgroundDark = Color.fromARGB(255,128,128,96);
 const categoryBackgroundDark = Color.fromARGB(255,128,96,128);
+const greyDark = Color.fromARGB(255,16,16,16); 

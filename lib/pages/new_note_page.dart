@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'additional_files/color.dart';
-import 'additional_files/notification_service.dart'; 
+import 'additional_files/notification_service.dart';
 import 'note_idea_home_page.dart';
 import 'additional_files/bottom_menu.dart';
 import '../models/note.dart';
 import 'additional_files/category_list.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-//page for adding/editing notes
-
+// Page for adding/editing notes
 class NewNotePage extends StatefulWidget {
   final Note? existingNote;
 
@@ -23,6 +23,7 @@ class _NewNotePageState extends State<NewNotePage> {
   late TextEditingController _passwordController;
   DateTime? _reminder;
   String? _selectedCategory;
+  bool _isDarkMode = false;
 
   @override
   void initState() {
@@ -35,10 +36,11 @@ class _NewNotePageState extends State<NewNotePage> {
         TextEditingController(text: widget.existingNote?.password ?? '');
     _reminder = widget.existingNote?.reminder;
     _selectedCategory = widget.existingNote?.category;
-    NotificationService.init(); 
+    NotificationService.init();
+    _loadDarkModePreference();
   }
 
-  //function for pick time for notification
+  // Function for picking time for notification
   Future<void> _pickReminder() async {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
@@ -67,6 +69,7 @@ class _NewNotePageState extends State<NewNotePage> {
     }
   }
 
+  // Function to save the note
   void _saveNote() {
     final updatedNote = Note(
       title: _titleController.text,
@@ -77,27 +80,34 @@ class _NewNotePageState extends State<NewNotePage> {
       reminder: _reminder,
       category: _selectedCategory,
     );
-  
-    
+
     if (_reminder != null) {
       NotificationService.scheduleNotification(
-        updatedNote.hashCode, 
+        updatedNote.hashCode,
         updatedNote.title,
         updatedNote.content,
-        _reminder!, 
+        _reminder!,
       );
     }
 
     Navigator.pop(context, updatedNote);
   }
 
+  // Load dark mode preference
+  Future<void> _loadDarkModePreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _isDarkMode = prefs.getBool('dark_mode') ?? false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //header
+      backgroundColor: _isDarkMode ? Colors.black : white, // Nastavíme pozadí celé stránky
+      // Header
       appBar: AppBar(
-        backgroundColor: headerBackground,
+        backgroundColor: _isDarkMode ? Colors.black : headerBackground,
         title: const Text(
           'Edit Note',
           style: TextStyle(color: Colors.white),
@@ -115,42 +125,56 @@ class _NewNotePageState extends State<NewNotePage> {
           ),
         ],
       ),
-      //body (add/edit page)
-      body: SingleChildScrollView(  
+      // Body (add/edit page)
+      body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(12.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              //for title
+              // For title
               TextField(
                 controller: _titleController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Title',
+                  labelStyle: TextStyle(color: _isDarkMode ? Colors.white : Colors.black),
                   border: OutlineInputBorder(),
+                  filled: true,
+                  fillColor: _isDarkMode ? Colors.grey[900] : Colors.white,
                 ),
+                style: TextStyle(color: _isDarkMode ? Colors.white : Colors.black),
               ),
               const SizedBox(height: 16),
-              //for your note
+              // For your note
               TextField(
                 controller: _contentController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   hintText: 'Enter your note here...',
+                  hintStyle: TextStyle(color: _isDarkMode ? Colors.white : Colors.black),
                   border: OutlineInputBorder(),
+                  filled: true,
+                  fillColor: _isDarkMode ? Colors.grey[900] : Colors.white,
                 ),
+                style: TextStyle(color: _isDarkMode ? Colors.white : Colors.black),
                 maxLines: null,
                 minLines: 10,
                 keyboardType: TextInputType.multiline,
               ),
               const SizedBox(height: 16),
-              //Select category
+              // Select category
               DropdownButtonFormField<String>(
                 value: _selectedCategory,
-                hint: const Text('Select Category'),
+                hint: Text(
+                  'Select Category',
+                  style: TextStyle(color: _isDarkMode ? Colors.white : Colors.black),
+                ),
                 items: categories.map((String category) {
                   return DropdownMenuItem<String>(
                     value: category,
-                    child: Text(category),
+                    child: Text(
+                      category,
+                      style: TextStyle(color: _isDarkMode ? Colors.white : Colors.black),
+                    ),
                   );
                 }).toList(),
                 onChanged: (String? newValue) {
@@ -158,35 +182,47 @@ class _NewNotePageState extends State<NewNotePage> {
                     _selectedCategory = newValue;
                   });
                 },
-                decoration: const InputDecoration(
+                dropdownColor: _isDarkMode ? Colors.grey[900] : Colors.white,
+                decoration: InputDecoration(
                   labelText: 'Category',
+                  labelStyle: TextStyle(color: _isDarkMode ? Colors.white : Colors.black),
                   border: OutlineInputBorder(),
+                  filled: true,
+                  fillColor: _isDarkMode ? Colors.grey[900] : Colors.white,
                 ),
               ),
               const SizedBox(height: 16),
-              //for password
+              // For password
               TextField(
                 controller: _passwordController,
                 obscureText: true,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Password (optional)',
+                  labelStyle: TextStyle(color: _isDarkMode ? Colors.white : Colors.black),
                   border: OutlineInputBorder(),
+                  filled: true,
+                  fillColor: _isDarkMode ? Colors.grey[900] : Colors.white,
                 ),
+                style: TextStyle(color: _isDarkMode ? Colors.white : Colors.black),
               ),
               const SizedBox(height: 16),
-              //for notice settings
+              // For notice settings
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     _reminder != null
-                        ? 'Reminder: \${_reminder!.toLocal()}'.split(' ')[0]
+                        ? 'Reminder: ${_reminder!.toLocal()}'.split(' ')[0]
                         : 'No reminder set',
+                    style: TextStyle(color: _isDarkMode ? Colors.white : Colors.black),
                   ),
                   TextButton.icon(
                     onPressed: _pickReminder,
-                    icon: const Icon(Icons.alarm),
-                    label: const Text('Set Reminder'),
+                    icon: Icon(Icons.alarm, color: _isDarkMode ? Colors.white : Colors.black),
+                    label: Text(
+                      'Set Reminder',
+                      style: TextStyle(color: _isDarkMode ? Colors.white : Colors.black),
+                    ),
                   ),
                 ],
               ),

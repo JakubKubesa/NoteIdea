@@ -2,29 +2,57 @@ import 'package:flutter/material.dart';
 import 'additional_files/color.dart';
 import '../models/note.dart';
 import 'new_note_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-//page to view note details
-
-class NoteDetailPage extends StatelessWidget {
+// Page to view note details
+class NoteDetailPage extends StatefulWidget {
   final Note note;
   final VoidCallback onDelete;
   final ValueChanged<Note> onUpdate;
 
   const NoteDetailPage({
-    super.key,
+    Key? key,
     required this.note,
     required this.onDelete,
     required this.onUpdate,
-  });
+  }) : super(key: key);
+
+  @override
+  _NoteDetailPageState createState() => _NoteDetailPageState();
+}
+
+class _NoteDetailPageState extends State<NoteDetailPage> {
+  bool _isDarkMode = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadDarkModePreference();
+  }
+
+  Future<void> _loadDarkModePreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _isDarkMode = prefs.getBool('dark_mode') ?? false;
+    });
+  }
+
+  Future<void> _toggleDarkMode(bool value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('dark_mode', value);
+    setState(() {
+      _isDarkMode = value;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //header
+      // Header
       appBar: AppBar(
-        backgroundColor: headerBackground,
+        backgroundColor: _isDarkMode ? greyDark : headerBackground,
         title: Text(
-          note.title,
+          widget.note.title,
           style: TextStyle(color: Colors.white),
         ),
         leading: IconButton(
@@ -38,7 +66,7 @@ class NoteDetailPage extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.delete, color: Colors.white),
             onPressed: () {
-              onDelete();
+              widget.onDelete();
               Navigator.pop(context);
             },
           ),
@@ -49,12 +77,12 @@ class NoteDetailPage extends StatelessWidget {
               final updatedNote = await Navigator.push<Note>(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => NewNotePage(existingNote: note),
+                  builder: (context) => NewNotePage(existingNote: widget.note),
                 ),
               );
 
               if (updatedNote != null) {
-                onUpdate(updatedNote);
+                widget.onUpdate(updatedNote);
                 Navigator.pop(context, updatedNote);
               }
             },
@@ -62,37 +90,41 @@ class NoteDetailPage extends StatelessWidget {
         ],
       ),
       body: Container(
-        color: white,
+        color: _isDarkMode ? Colors.black : white,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            //content
+            // Content
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(16.0),
                 child: Container(
-                  color: Colors.white,
+                  color: _isDarkMode ? Colors.black : Colors.white,
                   width: double.infinity,
                   child: Text(
-                    note.content,
-                    style: const TextStyle(fontSize: 16),
+                    widget.note.content,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: _isDarkMode ? Colors.white : Colors.black,
+                    ),
                   ),
                 ),
               ),
             ),
-            //category
-            if (note.category != null && note.category!.isNotEmpty)
+            // Category
+            if (widget.note.category != null && widget.note.category!.isNotEmpty)
               Container(
-                color: noteCategoryBackground,
+                color: _isDarkMode ? greyDark : noteCategoryBackground,
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
                 child: Align(
                   alignment: Alignment.bottomRight,
                   child: Text(
-                    'Category: ${note.category}',
-                    style: const TextStyle(
+                    'Category: ${widget.note.category}',
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
+                      color: _isDarkMode ? Colors.white : Colors.black,
                     ),
                   ),
                 ),
