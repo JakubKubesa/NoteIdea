@@ -23,6 +23,7 @@ class NoteDetailPage extends StatefulWidget {
 
 class _NoteDetailPageState extends State<NoteDetailPage> {
   bool _isDarkMode = false;
+  Color _headerColor = headerBackground;
 
   @override
   void initState() {
@@ -34,6 +35,7 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       _isDarkMode = prefs.getBool('dark_mode') ?? false;
+      _headerColor = Color(prefs.getInt('header_color') ?? headerBackground.value);
     });
   }
 
@@ -50,7 +52,7 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
     return Scaffold(
       // Header
       appBar: AppBar(
-        backgroundColor: _isDarkMode ? greyDark : headerBackground,
+        backgroundColor: _isDarkMode ? greyDark : _headerColor,
         title: Text(
           widget.note.title,
           style: TextStyle(color: Colors.white),

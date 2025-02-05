@@ -23,6 +23,7 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
   List<Note> notes = [];
   List<Note> filteredNotes = [];
   bool _isDarkMode = false;
+  Color _headerColor = headerBackground;
   String? selectedCategory;  
 
   @override
@@ -93,11 +94,12 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
     });
   }
 
-  //Dark mode
+  //Dark mode + header
   Future<void> _loadDarkModePreference() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       _isDarkMode = prefs.getBool('dark_mode') ?? false;
+      _headerColor = Color(prefs.getInt('header_color') ?? headerBackground.value);
     });
   }
 
@@ -177,7 +179,7 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
           Container(
             height: MediaQuery.of(context).size.height * 0.20,
             decoration: BoxDecoration(
-              color: headerBackground,
+              color: _headerColor,
             ),
             child: const Center(
               child: Padding(

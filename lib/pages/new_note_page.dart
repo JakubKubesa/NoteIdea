@@ -24,6 +24,7 @@ class _NewNotePageState extends State<NewNotePage> {
   DateTime? _reminder;
   String? _selectedCategory;
   bool _isDarkMode = false;
+  Color _headerColor = headerBackground;
 
   @override
   void initState() {
@@ -98,16 +99,17 @@ class _NewNotePageState extends State<NewNotePage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       _isDarkMode = prefs.getBool('dark_mode') ?? false;
+      _headerColor = Color(prefs.getInt('header_color') ?? headerBackground.value);
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _isDarkMode ? Colors.black : white, // Nastavíme pozadí celé stránky
+      backgroundColor: _isDarkMode ? Colors.black : white,
       // Header
       appBar: AppBar(
-        backgroundColor: _isDarkMode ? Colors.black : headerBackground,
+        backgroundColor: _isDarkMode ? Colors.black : _headerColor,
         title: const Text(
           'Edit Note',
           style: TextStyle(color: Colors.white),

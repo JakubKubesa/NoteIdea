@@ -18,6 +18,7 @@ class CategoryPage extends StatefulWidget {
 class _CategoryPageState extends State<CategoryPage> {
   List<Note> notes = [];
   bool _isDarkMode = false;
+  Color _headerColor = headerBackground;
 
   @override
   void initState() {
@@ -44,11 +45,12 @@ class _CategoryPageState extends State<CategoryPage> {
     }
   }
 
-  //Dark mode settings
+  //Dark mode + header settings
   Future<void> _loadDarkModePreference() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       _isDarkMode = prefs.getBool('dark_mode') ?? false;
+      _headerColor = Color(prefs.getInt('header_color') ?? headerBackground.value);
     });
   }
 
@@ -124,7 +126,7 @@ class _CategoryPageState extends State<CategoryPage> {
     return Scaffold(
       //header
       appBar: AppBar(
-        backgroundColor: headerBackground,
+        backgroundColor: _headerColor,
         automaticallyImplyLeading: false,
         title: const Text(
           'Categories',
