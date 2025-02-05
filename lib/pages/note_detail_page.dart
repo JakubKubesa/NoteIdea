@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_linkify/flutter_linkify.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'additional_files/color.dart';
 import '../models/note.dart';
 import 'new_note_page.dart';
@@ -45,6 +47,16 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
     setState(() {
       _isDarkMode = value;
     });
+  }
+
+  // Open link in browser
+  Future<void> _openLink(LinkableElement link) async {
+    final Uri url = Uri.parse(link.url);
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    } else {
+      throw 'Nemohu otevřít odkaz: $url';
+    }
   }
 
   @override
@@ -103,11 +115,16 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
                 child: Container(
                   color: _isDarkMode ? Colors.black : Colors.white,
                   width: double.infinity,
-                  child: Text(
-                    widget.note.content,
+                  child: Linkify(
+                    onOpen: _openLink,
+                    text: widget.note.content,
                     style: TextStyle(
                       fontSize: 16,
                       color: _isDarkMode ? Colors.white : Colors.black,
+                    ),
+                    linkStyle: const TextStyle(
+                      color: Colors.blue,
+                      decoration: TextDecoration.underline,
                     ),
                   ),
                 ),

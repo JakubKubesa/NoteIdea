@@ -1,17 +1,20 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.noteidea">
 
-    <!-- Oprávnění -->
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.INTERNET"/>
 
-    <!-- Dotaz na aktivity pro zpracování textu -->
     <queries>
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT" />
             <data android:mimeType="text/plain" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <data android:scheme="https"/>
         </intent>
     </queries>
 
@@ -21,7 +24,6 @@
         android:icon="@mipmap/ic_launcher"
         android:usesCleartextTraffic="true">
 
-        <!-- Hlavní aktivita -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -39,12 +41,10 @@
             </intent-filter>
         </activity>
 
-        <!-- Meta-data pro Flutter -->
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
 
-        <!-- Příjemci notifikací -->
         <receiver android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver"
             android:exported="true" />
         <receiver android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver"
@@ -55,7 +55,6 @@
             </intent-filter>
         </receiver>
 
-        <!-- Služba pro foreground notifikace -->
         <service android:name="com.dexterous.flutterlocalnotifications.ForegroundService"
             android:permission="android.permission.BIND_JOB_SERVICE"
             android:exported="true" />
