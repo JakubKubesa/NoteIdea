@@ -115,7 +115,7 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
   Future<void> _showPasswordDialog(Note note, int index) async {
     final controller = TextEditingController();
     bool isAuthenticated = false;
-
+  
     await showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -127,10 +127,15 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
         ),
         actions: [
           TextButton(
-            onPressed: () {
+            onPressed: () async {
               if (note.password == controller.text) {
                 isAuthenticated = true;
-                Navigator.pop(context);
+  
+                FocusScope.of(context).unfocus();
+  
+                await Future.delayed(const Duration(milliseconds: 300));
+  
+                if (context.mounted) Navigator.pop(context);
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Incorrect password')),
@@ -142,20 +147,24 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
         ],
       ),
     );
-
+  
     if (isAuthenticated) {
       Navigator.push(
         context,
-        MaterialPageRoute(
-          builder: (context) => NoteDetailPage(
+        PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) => NoteDetailPage(
             note: note,
             onDelete: () => deleteNote(index),
             onUpdate: (updatedNote) => updateNote(index, updatedNote),
           ),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return child;
+          },
         ),
       );
     }
   }
+
 
   //change the order in the list of notes
   void reorderNotes(int oldIndex, int newIndex) {
@@ -338,15 +347,17 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
                         onTap: () {
                           if (filteredNotes[index].password != null) {
                             _showPasswordDialog(filteredNotes[index], index);
-                          } else {
-                            Navigator.push(
+                          } else {Navigator.push(
                               context,
-                              MaterialPageRoute(
-                                builder: (context) => NoteDetailPage(
+                              PageRouteBuilder(
+                                pageBuilder: (context, animation, secondaryAnimation) => NoteDetailPage(
                                   note: filteredNotes[index],
                                   onDelete: () => deleteNote(index),
                                   onUpdate: (updatedNote) => updateNote(index, updatedNote),
                                 ),
+                                transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                                  return child; // Žádná animace
+                                },
                               ),
                             );
                           }
@@ -372,13 +383,29 @@ class _NoteIdeaHomePageState extends State<NoteIdeaHomePage> {
             case 1:
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const CategoryPage()),
+                PageRouteBuilder(
+                  pageBuilder: (context, animation, secondaryAnimation) => const CategoryPage(),
+                  transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                    return FadeTransition(
+                      opacity: animation,
+                      child: child,
+                    );
+                  },
+                ),
               );
               break;
             case 2:
-              Navigator.push(
+            Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const SettingsPage()),
+                PageRouteBuilder(
+                  pageBuilder: (context, animation, secondaryAnimation) => const SettingsPage(),
+                  transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                    return FadeTransition(
+                      opacity: animation,
+                      child: child,
+                    );
+                  },
+                ),
               );
               break;
           }

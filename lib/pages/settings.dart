@@ -54,7 +54,7 @@ class _SettingsPageState extends State<SettingsPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text("Vyberte barvu hlavičky"),
+          title: const Text("Choose color of header"),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [              
@@ -155,13 +155,29 @@ class _SettingsPageState extends State<SettingsPage> {
             case 0:
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const NoteIdeaHomePage()),
+                PageRouteBuilder(
+                  pageBuilder: (context, animation, secondaryAnimation) => const NoteIdeaHomePage(),
+                  transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                    return FadeTransition(
+                      opacity: animation,
+                      child: child,
+                    );
+                  },
+                ),
               );
               break;
             case 1:
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const CategoryPage()),
+                PageRouteBuilder(
+                  pageBuilder: (context, animation, secondaryAnimation) => const CategoryPage(),
+                  transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                    return FadeTransition(
+                      opacity: animation,
+                      child: child,
+                    );
+                  },
+                ),
               );
               break;
             case 2:

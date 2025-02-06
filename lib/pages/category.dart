@@ -191,17 +191,33 @@ class _CategoryPageState extends State<CategoryPage> {
         onItemSelected: (index) {
           switch (index) {
             case 0:
-              Navigator.pushReplacement(
+              Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const NoteIdeaHomePage()),
+                PageRouteBuilder(
+                  pageBuilder: (context, animation, secondaryAnimation) => const NoteIdeaHomePage(),
+                  transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                    return FadeTransition(
+                      opacity: animation,
+                      child: child,
+                    );
+                  },
+                ),
               );
               break;
             case 1:
               break;
             case 2:
-              Navigator.pushReplacement(
+              Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const SettingsPage()),
+                PageRouteBuilder(
+                  pageBuilder: (context, animation, secondaryAnimation) => const SettingsPage(),
+                  transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                    return FadeTransition(
+                      opacity: animation,
+                      child: child,
+                    );
+                  },
+                ),
               );
               break;
           }
